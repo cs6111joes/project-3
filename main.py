@@ -28,18 +28,33 @@ def prune_apriori_candidates():
     # delete all itemsets such that some (k-1) subset of C
     # is not in Lk-1
 
-
 def clean_file(df):
 
     # Assuming we will need to do some cleaning on the data
     print('Cleaning dataframe')
 
-def apriori_algorithm(L1, df):
+def generate_above_minsup(CK):
+    print('generate_above_minsup')
 
-    generate_apriori_candidates()
-    prune_apriori_candidates()
+def apriori_algorithm(L, df):
 
+    #Lk is frequent k-itemset
+    #Ck is candidate k-itemset
+
+    k = 1
+
+    while L[k-1] is not None:
+
+        print('---- K is ', k, ' -----')
+        CK = generate_apriori_candidates()  # Ck = apriori-gen(Lk-1)
+        CK = prune_apriori_candidates()           
+        L.append(generate_above_minsup(CK))       # Lk = {c E Ck | c.count >= minup}
+        k+=1
+
+    # union all the L's
+    
 # generate L1, the large 1-itemset
+# may need to do more?
 def generate_L1(df):
 
     L1 = []
@@ -48,6 +63,7 @@ def generate_L1(df):
 
         L1.extend(df[column].unique())
 
+    print('L1: \n', L1)
     return L1
 
 def main():
@@ -56,9 +72,12 @@ def main():
     df = pd.read_csv(FILE)
     clean_file(df)
 
+    # put L's in this list
+    L = []
+
     L1 = generate_L1(df)
-    print('L1: \n', L1)
-    apriori_algorithm(L1, df)
+    L.append(L1)
+    apriori_algorithm(L, df)
 
 
 
